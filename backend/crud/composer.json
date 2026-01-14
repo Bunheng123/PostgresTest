@@ -1,0 +1,11 @@
+{
+    "name": "heng/krud",
+    "autoload": {
+        "psr-4": {
+            "Heng\\Krud\\": "src/"
+        }
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
