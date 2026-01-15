@@ -15,19 +15,25 @@ function App() {
   const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  const API_URL = "http://localhost/MyWebsite/database/backend/crud/index.php";
+  // Correct backend endpoint (note the `user` folder)
+  const API_URL =
+    "http://localhost/MyWebsite/database/user/backend/crud/index.php";
 
   // FETCH USERS
   const fetchUsers = () => {
     setLoading(true);
     fetch(API_URL)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status} ${res.statusText}`);
+        return res.json();
+      })
       .then((data) => {
         setUsers(data);
         setLoading(false);
       })
-      .catch(() => {
-        setError("Failed to load users");
+      .catch((err) => {
+        console.error("fetchUsers error:", err);
+        setError("Failed to load users: " + err.message);
         setLoading(false);
       });
   };
@@ -42,23 +48,39 @@ function App() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
-    }).then(() => {
-      fetchUsers();
-      setAddUserModalOpen(false);
-    });
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(() => {
+        fetchUsers();
+        setAddUserModalOpen(false);
+      })
+      .catch((err) => {
+        console.error("add user error:", err);
+        setError("Failed to add user: " + err.message);
+      });
   };
 
   // DELETE USER
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this user?")) return;
 
-    await fetch(API_URL, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
+    try {
+      const res = await fetch(API_URL, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
 
-    setUsers((prev) => prev.filter((u) => u.id !== id));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      setUsers((prev) => prev.filter((u) => u.id !== id));
+    } catch (err) {
+      console.error("delete user error:", err);
+      setError("Failed to delete user: " + err.message);
+    }
   };
 
   // OPEN EDIT
@@ -73,11 +95,20 @@ function App() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
-    }).then(() => {
-      fetchUsers();
-      setEditUserModalOpen(false);
-      setSelectedUser(null);
-    });
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then(() => {
+        fetchUsers();
+        setEditUserModalOpen(false);
+        setSelectedUser(null);
+      })
+      .catch((err) => {
+        console.error("update user error:", err);
+        setError("Failed to update user: " + err.message);
+      });
   };
 
   return (
