@@ -3,19 +3,11 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// CORS Headers
-$allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3000'
-];
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-
-if (in_array($origin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: $origin");
-}
-
+// ------------------------
+// CORS (allow Vercel frontend)
+// ------------------------
+// Allow the frontend deployed on Vercel to access the backend
+header("Access-Control-Allow-Origin: https://postgres-test-j0p0tdnsd-lim-bunhengs-projects.vercel.app");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
@@ -27,7 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-// Check if UserController exists
+
+// ------------------------
+// Check UserController
+// ------------------------
 if (!file_exists('src/UserController.php')) {
     http_response_code(500);
     echo json_encode([
@@ -39,25 +34,28 @@ if (!file_exists('src/UserController.php')) {
 
 require_once 'src/UserController.php';
 
+// ------------------------
+// Handle HTTP methods
+// ------------------------
 try {
     $controller = new UserController();
     $method = $_SERVER['REQUEST_METHOD'];
 
     switch ($method) {
         case 'GET':
-            $controller->index();
+            $controller->index(); // Return all users
             break;
         
         case 'POST':
-            $controller->store();
+            $controller->store(); // Create user
             break;
         
         case 'PUT':
-            $controller->update();
+            $controller->update(); // Update user
             break;
         
         case 'DELETE':
-            $controller->destroy();
+            $controller->destroy(); // Delete user
             break;
         
         default:

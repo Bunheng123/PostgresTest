@@ -15,9 +15,8 @@ function App() {
   const [isEditUserModalOpen, setEditUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
-  // Correct backend endpoint (note the `user` folder)
-  const API_URL =
-    "http://localhost/MyWebsite/database/user/backend/crud/index.php";
+  // ✅ Use environment variable for API URL
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // FETCH USERS
   const fetchUsers = () => {
