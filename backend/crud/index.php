@@ -1,23 +1,27 @@
 <?php
-// Enable error reporting for debugging
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+$allowedOrigins = [
+    'http://localhost:5173', // add your local dev port
+    'http://localhost:5174',
+    'http://localhost:5175', // <-- add the port you use
+    'https://postgres-test-j0p0tdnsd-lim-bunhengs-projects.vercel.app', // production frontend
+];
 
-// ------------------------
-// CORS (allow Vercel frontend)
-// ------------------------
-// Allow the frontend deployed on Vercel to access the backend
-header("Access-Control-Allow-Origin: https://postgres-test-j0p0tdnsd-lim-bunhengs-projects.vercel.app");
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+
+if (in_array($origin, $allowedOrigins)) {
+    header("Access-Control-Allow-Origin: $origin");
+}
+
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
-// Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
+
 
 
 // ------------------------
