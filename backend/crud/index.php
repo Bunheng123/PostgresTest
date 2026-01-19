@@ -1,17 +1,14 @@
 <?php
-$allowedOrigins = [
-    'http://localhost:5173', // add your local dev port
-    'http://localhost:5174',
-    'http://localhost:5175', // <-- add the port you use
-    'https://postgres-test-j0p0tdnsd-lim-bunhengs-projects.vercel.app', // production frontend
-];
+// $allowedOrigins = [
+//     'http://localhost:5173', // add your local dev port
+//     'http://localhost:5174',
+//     'http://localhost:5175', // <-- add the port you use
+//     'https://postgres-test-j0p0tdnsd-lim-bunhengs-projects.vercel.app', // production frontend
+// ];
 
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-if (in_array($origin, $allowedOrigins)) {
-    header("Access-Control-Allow-Origin: $origin");
-}
 
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Access-Control-Allow-Credentials: true");
