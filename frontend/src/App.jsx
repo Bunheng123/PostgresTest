@@ -89,25 +89,36 @@ function App() {
   };
 
   // UPDATE USER
-  const handleUpdateUser = (user) => {
-    fetch(API_URL, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(user),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then(() => {
-        fetchUsers();
-        setEditUserModalOpen(false);
-        setSelectedUser(null);
-      })
-      .catch((err) => {
-        console.error("update user error:", err);
-        setError("Failed to update user: " + err.message);
+  // UPDATE USER
+  const handleUpdateUser = async (user) => {
+    try {
+      const res = await fetch(API_URL, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(user),
       });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      // Check if response has content before parsing JSON
+      const text = await res.text();
+
+      if (text) {
+        try {
+          JSON.parse(text); // Validate it's JSON
+        } catch (e) {
+          console.warn("Response is not JSON:", text);
+        }
+      }
+
+      // Refresh user list and close modal
+      fetchUsers();
+      setEditUserModalOpen(false);
+      setSelectedUser(null);
+    } catch (err) {
+      console.error("update user error:", err);
+      setError("Failed to update user: " + err.message);
+    }
   };
 
   return (
